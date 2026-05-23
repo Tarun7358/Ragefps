@@ -547,19 +547,13 @@ namespace RageOptimization.Services
         {
             if (string.IsNullOrEmpty(email)) return (false, "Email address cannot be empty.");
 
-            if (string.IsNullOrEmpty(FirebaseProjectId))
-            {
-                await Task.Delay(1000);
-                return (true, $"[Demo Mode] Password reset email simulated successfully to: {email}");
-            }
-
             try
             {
-                string url = $"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={FirebaseAuthApiKey}";
+                // Call unified Express server password reset endpoint
+                string url = "https://ragefps.in/api/auth/reset-password";
                 
                 var payload = new
                 {
-                    requestType = "PASSWORD_RESET",
                     email = email
                 };
 
@@ -569,14 +563,20 @@ namespace RageOptimization.Services
                 HttpResponseMessage response = await client.PostAsync(url, content);
                 if (response.IsSuccessStatusCode)
                 {
-                    return (true, "Password reset email has been dispatched. Check your inbox.");
+                    return (true, "Password reset email has been dispatched from support@ragefps.in. Check your inbox.");
                 }
 
                 string errJson = await response.Content.ReadAsStringAsync();
-                JObject doc = JObject.Parse(errJson);
-                string errMsg = doc["error"]?["message"]?.ToString() ?? "Unknown Firebase error";
-                
-                return (false, $"Firebase Error: {errMsg}");
+                try
+                {
+                    JObject doc = JObject.Parse(errJson);
+                    string errMsg = doc["error"]?.ToString() ?? "Server failed to process request.";
+                    return (false, errMsg);
+                }
+                catch
+                {
+                    return (false, "Failed to connect to authentication server.");
+                }
             }
             catch (Exception ex)
             {

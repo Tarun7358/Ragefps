@@ -528,17 +528,17 @@ export default function App() {
     
     if (confirm(`Send secure password reset instructions to ${email}?`)) {
       try {
-        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
+        const response = await fetch(getApiUrl('/api/auth/reset-password'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requestType: "PASSWORD_RESET", email: email })
+          body: JSON.stringify({ email: email })
         });
  
         if (response.ok) {
-          alert(`Success! Password Reset instructions have been dispatched to ${email} via mail.`);
+          alert(`Success! Password Reset instructions have been dispatched to ${email} via mail from support@ragefps.in.`);
         } else {
           const errData = await response.json();
-          alert("Firebase Auth error: " + (errData.error?.message || "Failed to trigger reset."));
+          alert("Server error: " + (errData.error || "Failed to trigger reset."));
         }
       } catch (err) {
         alert("Failed to send reset email: " + err.message);
