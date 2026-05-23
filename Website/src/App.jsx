@@ -557,7 +557,7 @@ function App() {
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> 1 Hardware (HWID) Device Limit</li>
                 </ul>
                 <button 
-                  onClick={() => window.open('https://discord.gg/rageoptimization', '_blank')}
+                  onClick={() => window.open('https://discord.gg/qE67Uqnc3N', '_blank')}
                   className="btn-secondary" 
                   style={{ width: '100%', justifyContent: 'center' }}
                 >
@@ -587,7 +587,7 @@ function App() {
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Unlimited HWID Reset Requests</li>
                 </ul>
                 <button 
-                  onClick={() => window.open('https://discord.gg/rageoptimization', '_blank')}
+                  onClick={() => window.open('https://discord.gg/qE67Uqnc3N', '_blank')}
                   className="btn-primary" 
                   style={{ width: '100%', justifyContent: 'center' }}
                 >
@@ -926,7 +926,7 @@ function App() {
               {/* Direct Support Channels */}
               <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap', marginTop: 10 }}>
                 <a 
-                  href="https://discord.gg/rageoptimization" 
+                  href="https://discord.gg/qE67Uqnc3N" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   style={{ 
@@ -946,7 +946,7 @@ function App() {
                   <MessageSquare size={20} color="#5865F2" />
                   <div style={{ textAlign: 'left' }}>
                     <span style={{ fontSize: '10px', color: '#5865F2', display: 'block', fontWeight: '800', letterSpacing: '0.5px' }}>JOIN DISCORD</span>
-                    <span style={{ color: '#fff', fontSize: '13px', fontWeight: 'bold' }}>discord.gg/rageoptimization</span>
+                    <span style={{ color: '#fff', fontSize: '13px', fontWeight: 'bold' }}>discord.gg/qE67Uqnc3N</span>
                   </div>
                 </a>
 
@@ -1083,7 +1083,7 @@ function App() {
             <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 4 }}>© 2026 Rage Optimization. All rights reserved.</p>
           </div>
           <div style={{ display: 'flex', gap: 20, fontSize: '13px', color: 'var(--text-secondary)', alignItems: 'center', flexWrap: 'wrap' }}>
-            <a href="https://discord.gg/rageoptimization" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', color: 'inherit' }}>
+            <a href="https://discord.gg/qE67Uqnc3N" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', color: 'inherit' }}>
               Discord Community <ExternalLink size={12} />
             </a>
             <span>•</span>
@@ -1091,7 +1091,7 @@ function App() {
               Email Support <ExternalLink size={12} />
             </a>
             <span>•</span>
-            <a href="https://github.com/Tarun7358/Antigravity" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', color: 'inherit' }}>
+            <a href="https://github.com/Tarun7358/Ragefps" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', color: 'inherit' }}>
               GitHub Source <ExternalLink size={12} />
             </a>
             <span>•</span>
