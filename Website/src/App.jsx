@@ -547,7 +547,7 @@ function App() {
                   <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Premium Plan</h3>
                 </div>
                 <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹500</span>
+                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹499</span>
                   <span style={{ color: 'var(--text-secondary)' }}> once</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
@@ -575,7 +575,7 @@ function App() {
                   <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Elite Plan</h3>
                 </div>
                 <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹1000</span>
+                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹999</span>
                   <span style={{ color: 'var(--text-secondary)' }}> once</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
