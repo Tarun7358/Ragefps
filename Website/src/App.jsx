@@ -196,39 +196,90 @@ function App() {
     setSimulating(true);
   };
 
-  const handleCheckoutSubmit = (e) => {
+  const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
     if (!paymentName || !paymentEmail) return;
 
-    // Generate simulated license key
+    setIsCheckingOut(true);
     const uniqueKey = `RAGE-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-PREMIUM`;
-    setGeneratedKey(uniqueKey);
-    setOrderComplete(true);
+    
+    try {
+      const response = await fetch(getApiUrl(`/api/licenses/${uniqueKey}`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: uniqueKey,
+          username: paymentName,
+          email: paymentEmail,
+          expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          hwid: '',
+          status: 'active',
+          isAdmin: false
+        })
+      });
+
+      if (response.ok) {
+        setGeneratedKey(uniqueKey);
+        setOrderComplete(true);
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+    }
+    setIsCheckingOut(false);
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!licenseInput.trim()) {
       setLoginError('Please enter a license key.');
       return;
     }
 
-    if (licenseInput.toLowerCase().startsWith('rage-') || licenseInput.toLowerCase() === 'admin') {
-      setIsLoggedIn(true);
-      setLoginUser(loginUser || 'GamerPro');
-      setLoginError('');
-    } else {
-      setLoginError('Invalid license format. In Demo Mode, use any key starting with "RAGE-" or "admin".');
+    try {
+      const response = await fetch(getApiUrl('/api/licenses'));
+      if (response.ok) {
+        const licenses = await response.json();
+        const license = licenses.find(l => l.key === licenseInput.trim());
+        
+        if (license) {
+          if (license.status === 'banned') {
+            setLoginError('This license key has been banned. Please contact support.');
+            return;
+          }
+          setIsLoggedIn(true);
+          setLoginUser(license.username || 'User');
+          setLoginError('');
+        } else {
+          setLoginError('Invalid license key. Not found in the database.');
+        }
+      } else {
+        setLoginError('Server error while checking license.');
+      }
+    } catch (err) {
+      console.error(err);
+      setLoginError('Failed to connect to authentication server.');
     }
   };
 
-  const handleResetHwid = () => {
+  const handleResetHwid = async () => {
     setHwidResetting(true);
     setHwidResetMessage('');
-    setTimeout(() => {
-      setHwidResetting(false);
-      setHwidResetMessage('HWID lock successfully reset on the cloud database! You can now log in on a new PC.');
-    }, 1500);
+    
+    try {
+      const response = await fetch(getApiUrl(`/api/licenses/${licenseInput}`), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hwid: '' })
+      });
+      if (response.ok) {
+        setHwidResetMessage('HWID lock successfully reset on the cloud database! You can now log in on a new PC.');
+      } else {
+        setHwidResetMessage('Failed to reset HWID on server.');
+      }
+    } catch (err) {
+      setHwidResetMessage('Failed to connect to authentication server.');
+    }
+    setHwidResetting(false);
   };
 
   const handleTicketSubmit = async (e) => {
