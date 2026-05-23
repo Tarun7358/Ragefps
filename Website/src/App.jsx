@@ -539,84 +539,59 @@ function App() {
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 25, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-              {/* Plan 1 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 30, maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+              {/* Premium Plan */}
               <div className="glass-card" style={{ padding: '35px', display: 'flex', flexDirection: 'column', gap: 20 }}>
                 <div>
                   <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '1px' }}>STANDARD LICENSE</span>
-                  <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Starter Tweaker</h3>
+                  <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Premium Plan</h3>
                 </div>
                 <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>$4.99</span>
-                  <span style={{ color: 'var(--text-secondary)' }}> / month</span>
+                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹500</span>
+                  <span style={{ color: 'var(--text-secondary)' }}> once</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Standard Registry Optimization</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Basic RAM Memory Cleanups</li>
+                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Advanced RAM Memory Cleanups</li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Standard DNS Ping Reducer</li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> 1 Hardware (HWID) Device Limit</li>
                 </ul>
                 <button 
-                  onClick={() => { setSelectedPlan('Starter Tweaker'); setIsCheckingOut(true); }}
+                  onClick={() => window.open('https://discord.gg/rageoptimization', '_blank')}
                   className="btn-secondary" 
                   style={{ width: '100%', justifyContent: 'center' }}
                 >
-                  Order License Key
+                  Order via Discord
                 </button>
               </div>
 
-              {/* Plan 2 */}
+              {/* Elite Plan */}
               <div className="glass-card" style={{ padding: '35px', display: 'flex', flexDirection: 'column', gap: 20, border: '2px solid var(--primary)', position: 'relative', transform: 'scale(1.02)' }}>
                 <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: '#fff', fontSize: '10px', fontWeight: '900', padding: '4px 12px', borderRadius: 20, letterSpacing: '0.5px' }}>
-                  MOST POPULAR Choice
+                  BEST VALUE CHOICE
                 </div>
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#ff5555', letterSpacing: '1px' }}>COMPETITIVE PLANS</span>
-                  <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Esports Pro</h3>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#ff5555', letterSpacing: '1px' }}>UNLIMITED ACCESS</span>
+                  <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Elite Plan</h3>
                 </div>
                 <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>$9.99</span>
-                  <span style={{ color: 'var(--text-secondary)' }}> / month</span>
-                </div>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Everything in Starter License</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Free Fire sensitivity optimization</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> BlueStacks priority scheduler keys</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> GPU Multimedia priority controls</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Premium Priority Support Center</li>
-                </ul>
-                <button 
-                  onClick={() => { setSelectedPlan('Esports Pro'); setIsCheckingOut(true); }}
-                  className="btn-primary" 
-                  style={{ width: '100%', justifyContent: 'center' }}
-                >
-                  Order License Key
-                </button>
-              </div>
-
-              {/* Plan 3 */}
-              <div className="glass-card" style={{ padding: '35px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <div>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '1px' }}>UNLIMITED ACCESS</span>
-                  <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Lifetime VIP</h3>
-                </div>
-                <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>$29.99</span>
+                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹1000</span>
                   <span style={{ color: 'var(--text-secondary)' }}> once</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Lifetime access &amp; free upgrades</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> All advanced tweaks &amp; regedits</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Self-managing cloud portal</li>
+                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Everything in Premium License</li>
+                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Free Fire sensitivity optimization</li>
+                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> BlueStacks priority scheduler keys</li>
+                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> GPU Multimedia priority controls</li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Direct Discord Developer Chat Access</li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Unlimited HWID reset requests</li>
+                  <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Unlimited HWID Reset Requests</li>
                 </ul>
                 <button 
-                  onClick={() => { setSelectedPlan('Lifetime VIP'); setIsCheckingOut(true); }}
-                  className="btn-secondary" 
+                  onClick={() => window.open('https://discord.gg/rageoptimization', '_blank')}
+                  className="btn-primary" 
                   style={{ width: '100%', justifyContent: 'center' }}
                 >
-                  Order License Key
+                  Order via Discord
                 </button>
               </div>
             </div>
