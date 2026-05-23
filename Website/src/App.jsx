@@ -26,7 +26,7 @@ const getApiUrl = (path) => {
   if (isLocal && (window.location.port === '5175' || window.location.port === '5176')) {
     return `http://localhost:5000${path}`;
   }
-  return path;
+  return `https://ragefps.onrender.com${path}`;
 };
 
 function App() {
