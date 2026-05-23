@@ -1,0 +1,13 @@
+{
+  "name": "rage-optimization-backend",
+  "version": "1.0.0",
+  "description": "Real-time support ticket backend for Rage Tweak Vault",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
