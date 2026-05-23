@@ -35,3 +35,7 @@ Thumbs.db
 
 # Large binaries & installer outputs
 Output/
+
+# Environment secrets
+.env
+*.env
