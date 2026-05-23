@@ -798,9 +798,7 @@ export default function App() {
             Authorize Access
           </button>
           
-          <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textAlign: 'center', lineHeight: '1.4' }}>
-            Enter username <b>admin</b> and either the rotating dynamic security token or <b>admin</b> to authenticate.
-          </p>
+
         </form>
       </div>
     );
