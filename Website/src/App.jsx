@@ -56,6 +56,27 @@ function App() {
 
   // Support / Tickets state
   const [projectId, setProjectId] = useState(() => localStorage.getItem('firebase_project_id') || 'rage-optimization');
+  const [latestVersion, setLatestVersion] = useState('1.0.0');
+  const [downloadUrl, setDownloadUrl] = useState('');
+
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      if (!projectId || projectId === 'rage-optimization-db') return;
+      try {
+        const response = await fetch(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/metadata/version`);
+        if (response.ok) {
+          const data = await response.json();
+          const fields = data.fields || {};
+          setLatestVersion(fields.latestVersion?.stringValue || '1.0.0');
+          setDownloadUrl(fields.downloadUrl?.stringValue || '');
+        }
+      } catch (err) {
+        console.error("Error fetching version metadata:", err);
+      }
+    };
+    fetchMetadata();
+  }, [projectId]);
+
   const [tickets, setTickets] = useState([
     { id: 'TICKET-1042', subject: 'HWID Reset requested after CPU upgrade', status: 'Resolved', date: '2 hours ago', licenseKey: 'anonymous' }
   ]);
@@ -754,8 +775,8 @@ function App() {
                   </div>
                 </div>
 
-                <a 
-                  href="/RageOptimizationSetup.exe"
+                 <a 
+                  href={downloadUrl || "/RageOptimizationSetup.exe"}
                   download="RageOptimizationSetup.exe"
                   className="btn-primary" 
                   style={{ justifyContent: 'center', padding: '14px 20px', textDecoration: 'none', marginTop: 'auto' }}
