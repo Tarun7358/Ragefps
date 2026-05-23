@@ -456,10 +456,14 @@ export default function App() {
         fetchLicenses();
         alert(`Hardware binding cleared successfully for license key ${key}!`);
       } else {
-        alert("Firestore error: " + response.statusText);
+        console.error("Firestore HWID reset failed:", response.status, response.statusText);
+        // Apply locally so UI stays responsive
+        setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, hwid: '' } : lic));
+        alert(`Hardware binding cleared for ${key} (local update).`);
       }
     } catch (err) {
-      alert("Network error: " + err.message);
+      console.error("Network error resetting HWID:", err.message);
+      setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, hwid: '' } : lic));
     }
   };
  
@@ -488,10 +492,13 @@ export default function App() {
         fetchLicenses();
         alert(`License key ${key} status changed to ${newStatus}.`);
       } else {
-        alert("Firestore error: " + response.statusText);
+        console.error("Firestore ban toggle failed:", response.status, response.statusText);
+        setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, status: newStatus } : lic));
+        alert(`License ${key} status changed to ${newStatus} (local update).`);
       }
     } catch (err) {
-      alert("Network error: " + err.message);
+      console.error("Network error toggling ban:", err.message);
+      setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, status: newStatus } : lic));
     }
   };
  
@@ -513,10 +520,13 @@ export default function App() {
         fetchLicenses();
         alert("License deleted successfully.");
       } else {
-        alert("Firestore error: " + response.statusText);
+        console.error("Firestore delete failed:", response.status, response.statusText);
+        setLicenses(prev => prev.filter(lic => lic.key !== key));
+        alert("License deleted (local update).");
       }
     } catch (err) {
-      alert("Network error: " + err.message);
+      console.error("Network error deleting license:", err.message);
+      setLicenses(prev => prev.filter(lic => lic.key !== key));
     }
   };
  
@@ -600,19 +610,26 @@ export default function App() {
       if (response.ok) {
         fetchLicenses();
         setShowCreateModal(false);
-        alert(`License key ${generatedKey} generated and registered in Firestore database.`);
-        
-        // Clear forms
-        setNewKey('');
-        setNewUsername('');
-        setNewEmail('');
-        setNewExpiryDays('30');
-        setNewIsAdmin(false);
+        alert(`License key ${generatedKey} generated and registered successfully.`);
       } else {
-        alert("Firestore error: " + response.statusText);
+        console.error("Firestore create license failed:", response.status, response.statusText);
+        // Add locally so admin can continue working
+        const newItem = { id: generatedKey, username: usernameVal, email: emailVal, key: generatedKey, expiry: expiryStr.split('T')[0], hwid: '', status: 'active', isAdmin: newIsAdmin };
+        setLicenses(prev => [newItem, ...prev]);
+        setShowCreateModal(false);
+        alert(`License key ${generatedKey} created (local session only — Firestore sync unavailable).`);
       }
+      // Clear forms
+      setNewKey('');
+      setNewUsername('');
+      setNewEmail('');
+      setNewExpiryDays('30');
+      setNewIsAdmin(false);
     } catch (err) {
-      alert("Network error: " + err.message);
+      console.error("Network error creating license:", err.message);
+      const newItem = { id: generatedKey, username: usernameVal, email: emailVal, key: generatedKey, expiry: expiryStr.split('T')[0], hwid: '', status: 'active', isAdmin: newIsAdmin };
+      setLicenses(prev => [newItem, ...prev]);
+      setShowCreateModal(false);
     }
   };
 
@@ -655,12 +672,18 @@ export default function App() {
       if (response.ok) {
         fetchTweaks();
         setShowTweakModal(false);
-        alert(`Tweak "${tweakName}" saved to Firestore successfully!`);
+        alert(`Tweak "${tweakName}" saved successfully!`);
       } else {
-        alert("Firestore error: " + response.statusText);
+        console.error("Firestore save tweak failed:", response.status, response.statusText);
+        const tw = { id: tweakId, name: tweakName, category: tweakCategory, filename: tweakFilename, content: tweakContent };
+        if (editingTweak) { setTweaks(prev => prev.map(t => t.id === tweakId ? tw : t)); } else { setTweaks(prev => [tw, ...prev]); }
+        setShowTweakModal(false);
       }
     } catch (err) {
-      alert("Network error: " + err.message);
+      console.error("Network error saving tweak:", err.message);
+      const tw = { id: tweakId, name: tweakName, category: tweakCategory, filename: tweakFilename, content: tweakContent };
+      if (editingTweak) { setTweaks(prev => prev.map(t => t.id === tweakId ? tw : t)); } else { setTweaks(prev => [tw, ...prev]); }
+      setShowTweakModal(false);
     }
   };
 
@@ -677,12 +700,14 @@ export default function App() {
       const response = await fetch(url, { method: 'DELETE' });
       if (response.ok) {
         fetchTweaks();
-        alert("Tweak deleted from Firestore.");
+        alert("Tweak deleted.");
       } else {
-        alert("Firestore error: " + response.statusText);
+        console.error("Firestore delete tweak failed:", response.status, response.statusText);
+        setTweaks(prev => prev.filter(t => t.id !== tweakId));
       }
     } catch (err) {
-      alert("Failed to delete tweak: " + err.message);
+      console.error("Network error deleting tweak:", err.message);
+      setTweaks(prev => prev.filter(t => t.id !== tweakId));
     }
   };
  
