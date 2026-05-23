@@ -32,7 +32,8 @@ const getApiUrl = (path) => {
   if (isLocal && (window.location.port === '5175' || window.location.port === '5176')) {
     return `http://localhost:5000${path}`;
   }
-  return path;
+  // Change this to your Render URL after you deploy it (e.g., https://ragefps-backend.onrender.com)
+  return `https://ragefps-backend.onrender.com${path}`;
 };
 
 export default function App() {
