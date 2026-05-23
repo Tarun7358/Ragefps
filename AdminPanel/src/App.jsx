@@ -750,7 +750,7 @@ export default function App() {
         <form className="login-card" onSubmit={handleLoginSubmit}>
           <div style={{ textAlign: 'center', marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img 
-              src="/admin/logo.jpeg" 
+              src="logo.jpeg" 
               alt="Rage Logo" 
               style={{ 
                 width: 64, 
@@ -813,7 +813,7 @@ export default function App() {
       <aside className="sidebar">
         <div className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px 20px', borderBottom: '1px solid var(--border-color)', marginBottom: '20px' }}>
           <img 
-            src="/admin/logo.jpeg" 
+            src="logo.jpeg" 
             alt="Rage Logo" 
             style={{ 
               width: 32, 
