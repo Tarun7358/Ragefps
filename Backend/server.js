@@ -174,7 +174,78 @@ app.delete('/api/tickets/:id', (req, res) => {
   res.json({ message: "Ticket deleted successfully", id });
 });
 
+// ─── LICENSE STORE ───────────────────────────────────────────────────────────
+const LICENSES_FILE = path.join(__dirname, 'licenses.json');
+
+const defaultLicenses = [
+  { id: 'RAGE-DEMO-EXPRESS', username: 'Clasher', email: 'clasher@gmail.com', key: 'RAGE-DEMO-EXPRESS', expiry: '2027-05-22', hwid: 'd1a39d9e4b0d47bcb556ffc76bd488e8', status: 'active', isAdmin: false },
+  { id: 'RAGE-ALPHA-9921',   username: 'eSportsPlayer', email: 'esports@gmail.com', key: 'RAGE-ALPHA-9921', expiry: '2026-08-15', hwid: 'a93bd1059f1349f2832bc9318b76c8c1', status: 'active', isAdmin: false },
+  { id: 'RAGE-PRO-7729',     username: 'HackerKid', email: 'hacker@gmail.com', key: 'RAGE-PRO-7729', expiry: '2026-06-01', hwid: '229ab81c002f483c18b7f8c05763901b', status: 'banned', isAdmin: false },
+  { id: 'admin',             username: 'RageDeveloper', email: 'dev@rage.gg', key: 'admin', expiry: '2030-12-31', hwid: '', status: 'active', isAdmin: true }
+];
+
+const readLicenses = () => {
+  try {
+    if (!fs.existsSync(LICENSES_FILE)) {
+      fs.writeFileSync(LICENSES_FILE, JSON.stringify(defaultLicenses, null, 2));
+      return defaultLicenses;
+    }
+    return JSON.parse(fs.readFileSync(LICENSES_FILE, 'utf8') || '[]');
+  } catch (err) {
+    console.error('Error reading licenses file:', err);
+    return defaultLicenses;
+  }
+};
+
+const writeLicenses = (licenses) => {
+  try { fs.writeFileSync(LICENSES_FILE, JSON.stringify(licenses, null, 2)); }
+  catch (err) { console.error('Error writing licenses file:', err); }
+};
+
+// GET all licenses
+app.get('/api/licenses', (req, res) => {
+  res.json(readLicenses());
+});
+
+// CREATE or UPDATE a license  (PUT /api/licenses/:key)
+app.put('/api/licenses/:key', (req, res) => {
+  const { key } = req.params;
+  const data = req.body;
+  let licenses = readLicenses();
+  const index = licenses.findIndex(l => l.key === key);
+  if (index !== -1) {
+    licenses[index] = { ...licenses[index], ...data, key };
+  } else {
+    licenses = [{ ...data, id: key, key }, ...licenses];
+  }
+  writeLicenses(licenses);
+  res.status(200).json(licenses.find(l => l.key === key));
+});
+
+// PATCH a license (partial update — status, hwid, etc.)
+app.patch('/api/licenses/:key', (req, res) => {
+  const { key } = req.params;
+  const updates = req.body;
+  const licenses = readLicenses();
+  const index = licenses.findIndex(l => l.key === key);
+  if (index === -1) return res.status(404).json({ error: 'License not found' });
+  licenses[index] = { ...licenses[index], ...updates };
+  writeLicenses(licenses);
+  res.json(licenses[index]);
+});
+
+// DELETE a license
+app.delete('/api/licenses/:key', (req, res) => {
+  const { key } = req.params;
+  let licenses = readLicenses();
+  if (!licenses.find(l => l.key === key)) return res.status(404).json({ error: 'License not found' });
+  licenses = licenses.filter(l => l.key !== key);
+  writeLicenses(licenses);
+  res.json({ message: 'License deleted', key });
+});
+
 // Request password reset email (sent from support@ragefps.in)
+
 app.post('/api/auth/reset-password', async (req, res) => {
   const { email } = req.body;
   if (!email) {

@@ -312,42 +312,18 @@ export default function App() {
     }
   };
 
-  // Fetch licenses from Firestore REST API
+  // Fetch licenses from Express backend (persists in licenses.json on server)
   const fetchLicenses = async () => {
-    if (!projectId || projectId === 'rage-optimization-db') {
-      // Stay on fallback mock licenses in demo mode
-      return;
-    }
- 
     try {
-      const response = await fetch(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/licenses`);
+      const response = await fetch(getApiUrl('/api/licenses'));
       if (response.ok) {
         const data = await response.json();
-        if (data.documents) {
-          const loadedLicenses = data.documents.map(doc => {
-            const fields = doc.fields || {};
-            const pathParts = doc.name.split('/');
-            const key = pathParts[pathParts.length - 1];
-            return {
-              id: key,
-              username: fields.username?.stringValue || '',
-              email: fields.email?.stringValue || '',
-              key: key,
-              expiry: fields.expiryDate?.stringValue ? fields.expiryDate.stringValue.split('T')[0] : '',
-              hwid: fields.hwid?.stringValue || '',
-              status: fields.status?.stringValue || 'active',
-              isAdmin: fields.isAdmin?.booleanValue || false
-            };
-          });
-          setLicenses(loadedLicenses);
-        } else {
-          setLicenses([]);
-        }
+        setLicenses(data);
       } else {
-        console.error("Failed to load licenses from Firestore:", response.statusText);
+        console.error('Failed to load licenses from backend:', response.status);
       }
     } catch (err) {
-      console.error("Error communicating with Firestore:", err);
+      console.error('Error fetching licenses from backend:', err);
     }
   };
  
@@ -433,100 +409,61 @@ export default function App() {
  
   // License Management Actions connected to Firebase
   const handleResetHwid = async (key) => {
-    if (projectId === 'rage-optimization-db') {
-      setLicenses(prev => prev.map(lic => 
-        lic.key === key ? { ...lic, hwid: '' } : lic
-      ));
-      return;
-    }
- 
     try {
-      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/licenses/${key}?updateMask.fieldPaths=hwid`;
-      const response = await fetch(url, {
+      const response = await fetch(getApiUrl(`/api/licenses/${key}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: {
-            hwid: { stringValue: '' }
-          }
-        })
+        body: JSON.stringify({ hwid: '' })
       });
- 
       if (response.ok) {
         fetchLicenses();
-        alert(`Hardware binding cleared successfully for license key ${key}!`);
+        alert(`Hardware binding cleared for ${key}!`);
       } else {
-        console.error("Firestore HWID reset failed:", response.status, response.statusText);
-        // Apply locally so UI stays responsive
-        setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, hwid: '' } : lic));
-        alert(`Hardware binding cleared for ${key} (local update).`);
+        // apply locally as fallback
+        setLicenses(prev => prev.map(l => l.key === key ? { ...l, hwid: '' } : l));
+        alert(`HWID cleared (local only).`);
       }
     } catch (err) {
-      console.error("Network error resetting HWID:", err.message);
-      setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, hwid: '' } : lic));
+      console.error('Network error resetting HWID:', err);
+      setLicenses(prev => prev.map(l => l.key === key ? { ...l, hwid: '' } : l));
     }
   };
  
   const handleToggleBan = async (key, currentStatus) => {
     const newStatus = currentStatus === 'banned' ? 'active' : 'banned';
-    if (projectId === 'rage-optimization-db') {
-      setLicenses(prev => prev.map(lic => 
-        lic.key === key ? { ...lic, status: newStatus } : lic
-      ));
-      return;
-    }
- 
     try {
-      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/licenses/${key}?updateMask.fieldPaths=status`;
-      const response = await fetch(url, {
+      const response = await fetch(getApiUrl(`/api/licenses/${key}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: {
-            status: { stringValue: newStatus }
-          }
-        })
+        body: JSON.stringify({ status: newStatus })
       });
- 
       if (response.ok) {
         fetchLicenses();
-        alert(`License key ${key} status changed to ${newStatus}.`);
+        alert(`License ${key} is now ${newStatus}.`);
       } else {
-        console.error("Firestore ban toggle failed:", response.status, response.statusText);
-        setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, status: newStatus } : lic));
-        alert(`License ${key} status changed to ${newStatus} (local update).`);
+        setLicenses(prev => prev.map(l => l.key === key ? { ...l, status: newStatus } : l));
+        alert(`License ${key} set to ${newStatus} (local only).`);
       }
     } catch (err) {
-      console.error("Network error toggling ban:", err.message);
-      setLicenses(prev => prev.map(lic => lic.key === key ? { ...lic, status: newStatus } : lic));
+      console.error('Network error toggling ban:', err);
+      setLicenses(prev => prev.map(l => l.key === key ? { ...l, status: newStatus } : l));
     }
   };
  
   const handleDeleteKey = async (key) => {
-    if (!confirm("Are you sure you want to delete this license key?")) return;
- 
-    if (projectId === 'rage-optimization-db') {
-      setLicenses(prev => prev.filter(lic => lic.key !== key));
-      return;
-    }
- 
+    if (!confirm('Are you sure you want to delete this license key?')) return;
     try {
-      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/licenses/${key}`;
-      const response = await fetch(url, {
-        method: 'DELETE'
-      });
- 
+      const response = await fetch(getApiUrl(`/api/licenses/${key}`), { method: 'DELETE' });
       if (response.ok) {
         fetchLicenses();
-        alert("License deleted successfully.");
+        alert('License deleted successfully.');
       } else {
-        console.error("Firestore delete failed:", response.status, response.statusText);
-        setLicenses(prev => prev.filter(lic => lic.key !== key));
-        alert("License deleted (local update).");
+        setLicenses(prev => prev.filter(l => l.key !== key));
+        alert('License deleted (local only).');
       }
     } catch (err) {
-      console.error("Network error deleting license:", err.message);
-      setLicenses(prev => prev.filter(lic => lic.key !== key));
+      console.error('Network error deleting license:', err);
+      setLicenses(prev => prev.filter(l => l.key !== key));
     }
   };
  
@@ -562,75 +499,32 @@ export default function App() {
     const usernameVal = newUsername.trim() || 'EsportsGamer';
     const emailVal = newEmail.trim() || `${usernameVal.toLowerCase()}@gmail.com`;
     const days = parseInt(newExpiryDays) || 30;
-    
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + days);
-    const expiryStr = expiryDate.toISOString();
- 
-    if (projectId === 'rage-optimization-db') {
-      const newItem = {
-        id: generatedKey,
-        username: usernameVal,
-        email: emailVal,
-        key: generatedKey,
-        expiry: expiryStr.split('T')[0],
-        hwid: '',
-        status: 'active',
-        isAdmin: newIsAdmin
-      };
-      setLicenses(prev => [newItem, ...prev]);
-      setShowCreateModal(false);
-      
-      // Clear forms
-      setNewKey('');
-      setNewUsername('');
-      setNewEmail('');
-      setNewExpiryDays('30');
-      setNewIsAdmin(false);
-      return;
-    }
- 
+    const expiryStr = expiryDate.toISOString().split('T')[0];
+
+    const newItem = { id: generatedKey, username: usernameVal, email: emailVal, key: generatedKey, expiry: expiryStr, hwid: '', status: 'active', isAdmin: newIsAdmin };
+
     try {
-      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/licenses/${generatedKey}`;
-      const response = await fetch(url, {
-        method: 'PATCH',
+      const response = await fetch(getApiUrl(`/api/licenses/${generatedKey}`), {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: {
-            username: { stringValue: usernameVal },
-            email: { stringValue: emailVal },
-            hwid: { stringValue: '' },
-            status: { stringValue: 'active' },
-            expiryDate: { stringValue: expiryStr },
-            isAdmin: { booleanValue: newIsAdmin }
-          }
-        })
+        body: JSON.stringify(newItem)
       });
- 
       if (response.ok) {
         fetchLicenses();
-        setShowCreateModal(false);
-        alert(`License key ${generatedKey} generated and registered successfully.`);
+        alert(`License key ${generatedKey} created and saved to server!`);
       } else {
-        console.error("Firestore create license failed:", response.status, response.statusText);
-        // Add locally so admin can continue working
-        const newItem = { id: generatedKey, username: usernameVal, email: emailVal, key: generatedKey, expiry: expiryStr.split('T')[0], hwid: '', status: 'active', isAdmin: newIsAdmin };
         setLicenses(prev => [newItem, ...prev]);
-        setShowCreateModal(false);
-        alert(`License key ${generatedKey} created (local session only — Firestore sync unavailable).`);
+        alert(`License key ${generatedKey} created (local session only).`);
       }
-      // Clear forms
-      setNewKey('');
-      setNewUsername('');
-      setNewEmail('');
-      setNewExpiryDays('30');
-      setNewIsAdmin(false);
     } catch (err) {
-      console.error("Network error creating license:", err.message);
-      const newItem = { id: generatedKey, username: usernameVal, email: emailVal, key: generatedKey, expiry: expiryStr.split('T')[0], hwid: '', status: 'active', isAdmin: newIsAdmin };
+      console.error('Network error creating license:', err);
       setLicenses(prev => [newItem, ...prev]);
-      setShowCreateModal(false);
     }
+
+    setShowCreateModal(false);
+    setNewKey(''); setNewUsername(''); setNewEmail(''); setNewExpiryDays('30'); setNewIsAdmin(false);
   };
 
   // Cloud Tweak Management Actions
