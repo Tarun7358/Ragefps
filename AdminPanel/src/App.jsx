@@ -380,23 +380,45 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
  
-  // Trigger fetch when logged in and poll for updates in real-time
+  // Real-time subscriptions via Server-Sent Events (SSE) from Express backend
   useEffect(() => {
-    let interval = null;
-    if (isLoggedIn) {
+    if (!isLoggedIn) return;
+
+    // Initial fetch for tweaks/metadata (not real-time)
+    fetchVersionMetadata();
+    fetchTweaks();
+
+    // SSE for licenses — instant push from Firestore via backend
+    const licenseSource = new EventSource(getApiUrl('/api/sse/licenses'));
+    licenseSource.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setLicenses(data);
+      } catch (err) { console.error('SSE licenses parse error:', err); }
+    };
+    licenseSource.onerror = () => {
+      console.warn('[SSE] licenses stream lost, falling back to poll');
+      licenseSource.close();
       fetchLicenses();
-      fetchVersionMetadata();
-      fetchTweaks();
+    };
+
+    // SSE for tickets — instant push from Firestore via backend
+    const ticketSource = new EventSource(getApiUrl('/api/sse/tickets'));
+    ticketSource.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setTickets(data);
+      } catch (err) { console.error('SSE tickets parse error:', err); }
+    };
+    ticketSource.onerror = () => {
+      console.warn('[SSE] tickets stream lost, falling back to poll');
+      ticketSource.close();
       fetchTickets();
- 
-      // Synchronize dashboard database records every 5 seconds in real-time
-      interval = setInterval(() => {
-        fetchTickets();
-        fetchLicenses();
-      }, 5000);
-    }
+    };
+
     return () => {
-      if (interval) clearInterval(interval);
+      licenseSource.close();
+      ticketSource.close();
     };
   }, [isLoggedIn, projectId]);
  
