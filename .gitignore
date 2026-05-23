@@ -40,3 +40,9 @@ Output/
 .env
 *.env
 firebase-key.json
+
+# Backend data files
+Backend/licenses.json
+Backend/tickets.json
+Backend/simulated_emails.json
+Backend/logs/
