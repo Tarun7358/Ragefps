@@ -39,3 +39,4 @@ Output/
 # Environment secrets
 .env
 *.env
+firebase-key.json

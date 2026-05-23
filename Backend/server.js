@@ -25,13 +25,22 @@ const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_
 
 const initFirebase = () => {
   try {
-    if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.FIREBASE_SERVICE_ACCOUNT.trim()) {
+    const keyPath = path.join(__dirname, 'firebase-key.json');
+    if (fs.existsSync(keyPath)) {
+      const serviceAccount = require(keyPath);
+      if (admin.apps.length === 0) {
+        admin.initializeApp({ credential: admin.credential.cert(serviceAccount), projectId: FIREBASE_PROJECT_ID });
+      }
+      db = admin.firestore();
+      console.log('[Firebase] ✅ Admin SDK connected to Firestore using firebase-key.json (full access).');
+      return 'admin';
+    } else if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.FIREBASE_SERVICE_ACCOUNT.trim() && !process.env.FIREBASE_SERVICE_ACCOUNT.includes('require')) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       if (admin.apps.length === 0) {
         admin.initializeApp({ credential: admin.credential.cert(serviceAccount), projectId: FIREBASE_PROJECT_ID });
       }
       db = admin.firestore();
-      console.log('[Firebase] ✅ Admin SDK connected to Firestore (full access).');
+      console.log('[Firebase] ✅ Admin SDK connected to Firestore using ENV var (full access).');
       return 'admin';
     }
   } catch (err) {
