@@ -53,6 +53,7 @@ function App() {
   const [loginError, setLoginError] = useState('');
   const [hwidResetting, setHwidResetting] = useState(false);
   const [hwidResetMessage, setHwidResetMessage] = useState('');
+  const [loggedInLicense, setLoggedInLicense] = useState(null);
 
   // Support / Tickets state
   const [projectId, setProjectId] = useState(() => localStorage.getItem('firebase_project_id') || 'rage-optimization');
@@ -201,7 +202,9 @@ function App() {
     if (!paymentName || !paymentEmail) return;
 
     setIsCheckingOut(true);
-    const uniqueKey = `RAGE-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-PREMIUM`;
+    const suffix = selectedPlan === 'Elite Plan' ? 'ELITE' : 'PREMIUM';
+    const uniqueKey = `RAGE-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${suffix}`;
+    const expiryDate = selectedPlan === 'Elite Plan' ? '2099-12-31' : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     
     try {
       const response = await fetch(getApiUrl(`/api/licenses/${uniqueKey}`), {
@@ -211,7 +214,7 @@ function App() {
           key: uniqueKey,
           username: paymentName,
           email: paymentEmail,
-          expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          expiry: expiryDate,
           hwid: '',
           status: 'active',
           isAdmin: false
@@ -248,6 +251,7 @@ function App() {
           }
           setIsLoggedIn(true);
           setLoginUser(license.username || 'User');
+          setLoggedInLicense(license);
           setLoginError('');
         } else {
           setLoginError('Invalid license key. Not found in the database.');
@@ -628,13 +632,22 @@ function App() {
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Standard DNS Ping Reducer</li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> 1 Hardware (HWID) Device Limit</li>
                 </ul>
-                <button 
-                  onClick={() => window.open('https://discord.gg/JdvKrCHnMJ', '_blank')}
-                  className="btn-secondary" 
-                  style={{ width: '100%', justifyContent: 'center' }}
-                >
-                  Order via Discord
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button 
+                    onClick={() => { setSelectedPlan('Premium Plan'); setIsCheckingOut(true); }}
+                    className="btn-primary" 
+                    style={{ width: '100%', justifyContent: 'center' }}
+                  >
+                    Simulate Purchase
+                  </button>
+                  <button 
+                    onClick={() => window.open('https://discord.gg/JdvKrCHnMJ', '_blank')}
+                    className="btn-secondary" 
+                    style={{ width: '100%', justifyContent: 'center', fontSize: '12px', padding: '8px' }}
+                  >
+                    Order via Discord
+                  </button>
+                </div>
               </div>
 
               {/* Elite Plan */}
@@ -658,13 +671,22 @@ function App() {
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Direct Discord Developer Chat Access</li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Unlimited HWID Reset Requests</li>
                 </ul>
-                <button 
-                  onClick={() => window.open('https://discord.gg/JdvKrCHnMJ', '_blank')}
-                  className="btn-primary" 
-                  style={{ width: '100%', justifyContent: 'center' }}
-                >
-                  Order via Discord
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button 
+                    onClick={() => { setSelectedPlan('Elite Plan'); setIsCheckingOut(true); }}
+                    className="btn-primary" 
+                    style={{ width: '100%', justifyContent: 'center', boxShadow: '0 0 15px rgba(255, 26, 26, 0.4)' }}
+                  >
+                    Simulate Purchase
+                  </button>
+                  <button 
+                    onClick={() => window.open('https://discord.gg/JdvKrCHnMJ', '_blank')}
+                    className="btn-secondary" 
+                    style={{ width: '100%', justifyContent: 'center', fontSize: '12px', padding: '8px' }}
+                  >
+                    Order via Discord
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -930,7 +952,7 @@ function App() {
                     </p>
                   </div>
                   <button 
-                    onClick={() => { setIsLoggedIn(false); setLicenseInput(''); }}
+                    onClick={() => { setIsLoggedIn(false); setLicenseInput(''); setLoggedInLicense(null); }}
                     className="btn-secondary"
                     style={{ padding: '8px 16px', fontSize: '13px' }}
                   >
@@ -947,7 +969,21 @@ function App() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: '13px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ color: 'var(--text-secondary)' }}>Status:</span>
-                        <span style={{ color: '#39ff14', fontWeight: 'bold' }}>Active / Lifetime</span>
+                        <span style={{ color: loggedInLicense?.status === 'active' ? '#39ff14' : '#ff5555', fontWeight: 'bold' }}>
+                          {loggedInLicense?.status ? loggedInLicense.status.toUpperCase() : 'ACTIVE'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Plan / Tier:</span>
+                        <span style={{ color: '#fff', fontWeight: 'bold' }}>
+                          {licenseInput.endsWith('-ELITE') ? 'Elite (Lifetime)' : 'Premium (Monthly)'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Expiry Date:</span>
+                        <span style={{ color: '#fff' }}>
+                          {licenseInput.endsWith('-ELITE') ? 'Permanent' : (loggedInLicense?.expiry || 'N/A')}
+                        </span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ color: 'var(--text-secondary)' }}>Key:</span>
