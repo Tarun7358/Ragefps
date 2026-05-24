@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
 using RageOptimization.Models;
 using RageOptimization.Services;
 
@@ -142,6 +144,7 @@ namespace RageOptimization
             PanelAdvanced.Visibility = Visibility.Collapsed;
             PanelLicense.Visibility = Visibility.Collapsed;
             PanelAdmin.Visibility = Visibility.Collapsed;
+            if (PanelUpdates != null) PanelUpdates.Visibility = Visibility.Collapsed;
 
             // Show selected panel
             if (clickedBtn == BtnDashboard) PanelDashboard.Visibility = Visibility.Visible;
@@ -153,6 +156,7 @@ namespace RageOptimization
             else if (clickedBtn == BtnAdvanced) PanelAdvanced.Visibility = Visibility.Visible;
             else if (clickedBtn == BtnLicense) PanelLicense.Visibility = Visibility.Visible;
             else if (clickedBtn == BtnAdmin) PanelAdmin.Visibility = Visibility.Visible;
+            else if (clickedBtn == BtnUpdates) PanelUpdates.Visibility = Visibility.Visible;
         }
 
         // 1. DASHBOARD BOOST ENGINE
@@ -183,6 +187,11 @@ namespace RageOptimization
             int appliedCount = 0;
             foreach (var tweak in allTweaks)
             {
+                if (tweak.TweakType != "REG" && tweak.TweakType != "BAT")
+                {
+                    continue;
+                }
+
                 LogToConsole($"  [TweakEngine] Applying {tweak.Name}...");
                 bool status = await Task.Run(() => TweakEngine.ExecuteTweak(tweak));
                 if (status) appliedCount++;
@@ -529,6 +538,58 @@ namespace RageOptimization
             {
                 LogToConsole($"Failed to apply custom tweak '{tweak.Name}'.");
                 MessageBox.Show($"Failed to apply '{tweak.Name}'. Check administrator privileges.", "Execution Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        // 10. UPDATES
+        private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateStatusText.Text = "Checking GitHub for updates...";
+            UpdateStatusText.Foreground = System.Windows.Media.Brushes.Gray;
+            
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("RageOptimizationClient/1.0");
+                    string url = "https://api.github.com/repos/Tarun7358/Ragefps/commits?per_page=1";
+                    var response = await client.GetStringAsync(url);
+                    
+                    var arr = JArray.Parse(response);
+                    if (arr.Count > 0)
+                    {
+                        var commit = arr[0]["commit"];
+                        string message = commit["message"]?.ToString();
+                        string date = commit["committer"]?["date"]?.ToString();
+                        
+                        UpdateStatusText.Text = $"Latest update found:\n{message}\nDate: {date}";
+                        UpdateStatusText.Foreground = System.Windows.Media.Brushes.LightGreen;
+                        BtnDownloadUpdate.Visibility = Visibility.Visible;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                UpdateStatusText.Text = "Failed to check for updates. Make sure you have internet access.";
+                UpdateStatusText.Foreground = System.Windows.Media.Brushes.Red;
+            }
+        }
+
+        private void DownloadUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "https://github.com/Tarun7358/Ragefps",
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open browser: {ex.Message}");
             }
         }
     }

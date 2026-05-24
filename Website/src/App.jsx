@@ -620,7 +620,7 @@ function App() {
                 </div>
                 <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
                   <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹499</span>
-                  <span style={{ color: 'var(--text-secondary)' }}> once</span>
+                  <span style={{ color: 'var(--text-secondary)' }}> / month</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Standard Registry Optimization</li>
@@ -647,8 +647,8 @@ function App() {
                   <h3 style={{ fontSize: '26px', color: '#fff', marginTop: 5 }}>Elite Plan</h3>
                 </div>
                 <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹999</span>
-                  <span style={{ color: 'var(--text-secondary)' }}> once</span>
+                  <span style={{ fontSize: '38px', fontWeight: '900', color: '#fff' }}>₹2999</span>
+                  <span style={{ color: 'var(--text-secondary)' }}> permanent</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)', flex: 1 }}>
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Check size={14} color="#ff1a1a" /> Everything in Premium License</li>

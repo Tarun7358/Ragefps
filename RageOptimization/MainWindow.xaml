@@ -128,6 +128,7 @@
                         <Button Content="🔋  Power Optimization" Style="{StaticResource SidebarButton}" Click="SidebarBtn_Click" Name="BtnPower"/>
                         <Button Content="⚙️  Advanced Tweaks" Style="{StaticResource SidebarButton}" Click="SidebarBtn_Click" Name="BtnAdvanced"/>
                         <Button Content="🔑  License Manager" Style="{StaticResource SidebarButton}" Click="SidebarBtn_Click" Name="BtnLicense"/>
+                        <Button Content="🔄  Updates" Style="{StaticResource SidebarButton}" Click="SidebarBtn_Click" Name="BtnUpdates"/>
                         <Button Content="🛡️  Admin Settings" Style="{StaticResource SidebarButton}" Click="SidebarBtn_Click" Name="BtnAdmin" Visibility="Collapsed"/>
                     </StackPanel>
                 </ScrollViewer>
@@ -693,6 +694,25 @@
                                 <Button Content="RESET HWID LOCK FOR KEY" Style="{StaticResource RgbButton}" Height="38" Click="AdminResetHwid_Click"/>
                                 
                                 <TextBlock x:Name="AdminStatusText" Text="" Foreground="#44FF44" FontSize="11" FontWeight="Bold" Margin="0,15,0,0" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 10. UPDATES PANEL -->
+                <Grid x:Name="PanelUpdates" Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock Text="SYSTEM UPDATER" Foreground="#FFFFFF" FontSize="20" FontWeight="ExtraBold"/>
+                        <TextBlock Text="Check for the latest tweaks and core application updates directly from the GitHub repository." Foreground="#9A9A9E" FontSize="12" Margin="0,5,0,25"/>
+
+                        <Border Background="{StaticResource CardBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="CLOUD SYNCHRONIZATION" Foreground="#FF1A1A" FontSize="12" FontWeight="Bold" Margin="0,0,0,15"/>
+                                
+                                <TextBlock x:Name="UpdateStatusText" Text="Ready to check for updates." Foreground="#9A9A9E" FontSize="11" Margin="0,0,0,15"/>
+
+                                <Button Content="CHECK FOR UPDATES" Style="{StaticResource RgbButton}" Height="38" Click="CheckUpdates_Click"/>
+                                <Button x:Name="BtnDownloadUpdate" Content="DOWNLOAD UPDATE" Style="{StaticResource RgbButton}" Height="38" Click="DownloadUpdate_Click" Margin="0,10,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
